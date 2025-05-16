@@ -6,6 +6,7 @@
     "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
+    "auto-bind": "^5.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "4.4.1",
     "dotenv": "^16.5.0",
