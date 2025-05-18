@@ -1,7 +1,7 @@
 'use strict';
 import mongoose from 'mongoose';
 import autoBind from 'auto-bind';
-import { HttpResponse } from '../helpers/HttpResponse';
+import HttpResponse from '../helpers/http-response.js';
 
 class Repository {
 
@@ -21,22 +21,14 @@ class Repository {
     delete query.limit;
     delete query.sortBy;
 
-    if (query._id) {
-      try {
-        query._id = new mongoose.mongo.ObjectId(query._id);
-      } catch (error) {
-        throw new Error('Not able to generate mongoose id with content');
-      }
-    }
-
     try {
-      let items = await this.model
+      const items = await this.model
         .find(query)
         .sort(sortBy)
         .skip(skip)
         .limit(limit);
 
-      let total = await this.model.countDocuments(query);
+      const total = await this.model.countDocuments(query);
 
       return new HttpResponse(items, {totalCount: total});
     } catch (errors) {
@@ -47,9 +39,9 @@ class Repository {
 
   async get(id) {
     try {
-      let item = await this.model.findById(id);
+      const item = await this.model.findById(id);
       if (!item) {
-        let error = new Error('Item not found');
+        const error = new Error('Item not found');
         error.statusCode = 404;
         throw error;
       }
@@ -62,9 +54,9 @@ class Repository {
 
   async insert(data) {
     try {
-      let item = await this.model.create(data);
+      const item = await this.model.create(data);
       if (item) {
-        return new HttpResponse(item);
+        return new HttpResponse(item, {created: true}, 201);
       } else {
         throw new Error('Something wrong happened');
       }
@@ -75,7 +67,7 @@ class Repository {
 
   async update(id, data) {
     try {
-      let item = await this.model.findByIdAndUpdate(id, data, { new: true });
+      const item = await this.model.findByIdAndUpdate(id, data, { new: true });
       return new HttpResponse(item);
     } catch (errors) {
       throw errors;
@@ -84,9 +76,9 @@ class Repository {
 
   async delete(id) {
     try {
-      let item = await this.model.findByIdAndDelete(id);
+      const item = await this.model.findByIdAndDelete(id);
       if (!item) {
-        let error = new Error('Item not found');
+        const error = new Error('Item not found');
         error.statusCode = 404;
         throw error;
       } else {
