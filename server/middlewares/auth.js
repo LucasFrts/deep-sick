@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const ensureAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,6 +15,7 @@ export const ensureAuth = async (req, res, next) => {
     req.user = { id: decoded.id, email: decoded.email };
     next();
   } catch (err) {
+    console.error(err);
     return res.status(401).json({ message: 'Token inválido ou expirado' });
   }
 };

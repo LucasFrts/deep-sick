@@ -1,22 +1,28 @@
-import express from 'express';
+import express from 'express'
+import cookieParser from 'cookie-parser'
+import logger from 'morgan'
 import path from 'path';
-import cookieParser from 'cookie-parser';
-import logger from 'morgan';
+import indexRouter from './routes/index.js'
+import usersRouter from './routes/users.js'
 
-import indexRouter from './routes/index';
-import usersRouter from './routes/users';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-console.log('⚙️  Registrando express.json() e urlencoded()');
+const app = express()
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+console.log('⚙️  Registrando express.json() e urlencoded()')
+
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+// Agora __dirname está definido corretamente
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', indexRouter)
+app.use('/users', usersRouter)
 
-export default app;
+export default app

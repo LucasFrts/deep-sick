@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { ensureAuth } from '../middlewares/auth';
-import UserController from '../controllers/user-controller';
-import UserRepository from '../repository/user-repository';
+import { ensureAuth } from '../middlewares/auth.js';
+import UserController from '../controllers/user-controller.js';
+import UserRepository from '../repository/user-repository.js';
 
 
 

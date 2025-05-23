@@ -1,36 +1,11 @@
 #!/usr/bin/env node
-
-/**
- * Module dependencies.
- */
-
-import app from "../app";
+import app from "../app.js";
 import debugLib from "debug";
 import http from "http";
 import dotenv from "dotenv";
-import connectDB from "../config/database";
+import { connectDB } from "../config/database.js";
 
-dotenv.config();
-
-const debug = debugLib("myapp:server");
-
-const port = normalizePort(process.env.APP_PORT || "3000");
-var server = http.createServer(app);
-
-(async () => {
-  await connectDB();
-  app.set("port", port);
-
-  server.listen(port);
-  server.on("error", onError);
-  server.on("listening", onListening);
-})();
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
+const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -44,13 +19,14 @@ function normalizePort(val) {
   }
 
   return false;
-}
+};
 
 /**
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+const onError = (error) => {
+  console.error(error);
   if (error.syscall !== "listen") {
     throw error;
   }
@@ -70,14 +46,30 @@ function onError(error) {
     default:
       throw error;
   }
-}
+};
 
 /**
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
-}
+};
+
+
+dotenv.config();
+
+const debug = debugLib("myapp:server");
+
+const port = normalizePort(process.env.APP_PORT || "3000");
+const server = http.createServer(app);
+
+await connectDB();
+app.set("port", port);
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
