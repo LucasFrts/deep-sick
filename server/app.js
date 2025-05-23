@@ -4,6 +4,7 @@ import logger from 'morgan'
 import path from 'path';
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
+import messagesRouter from './routes/messages.js'
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -24,5 +25,6 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
+app.use('/messages', messagesRouter)
 
 export default app
