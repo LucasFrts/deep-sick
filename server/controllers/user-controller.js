@@ -15,6 +15,11 @@ class UserController extends Controller {
   async insert(req, res, next) {
     try {
         console.log(req.body);
+      
+      if(req.body.role) {
+        delete req.body.role;
+      }
+
       const { password, ...userData } = req.body;
       
 
@@ -24,7 +29,7 @@ class UserController extends Controller {
       const user = response.data;
 
       const token = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, email: user.email, role:user.role },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN }
       );
@@ -46,9 +51,14 @@ class UserController extends Controller {
   async update(req, res, next) {
     const { id } = req.params;
     try {
-      // if(id != req.user.id) {
-      //   return res.status(401).json({ message: 'Unauthorized' });
-      // }
+
+      if(req.user.role != "admin" && id != req.user.id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      if(req.body.role) {
+        delete req.body.role;
+      }
 
      if(req.body.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
