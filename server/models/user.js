@@ -17,6 +17,11 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
+  },
+  language: {
+    type: String,
+    required: false,
+    default: 'pt-BR'
   }
 }, {
   timestamps: true

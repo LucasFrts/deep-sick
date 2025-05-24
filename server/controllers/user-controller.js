@@ -46,6 +46,10 @@ class UserController extends Controller {
   async update(req, res, next) {
     const { id } = req.params;
     try {
+      if(id != req.user.id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
      if(req.body.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       req.body.password = hashedPassword;
