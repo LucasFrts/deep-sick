@@ -71,6 +71,41 @@ class UserController extends Controller {
       next(e);
     }
   }
+
+  async getAll(req, res, next) {
+    try {
+      if(req.user.role != "admin"){
+        const { data, statusCode } = await this.repository.get(req.user.id);
+        return res.status(statusCode).json({
+          statusCode: statusCode,
+          data: [data],
+          metadata: { timestamp: new Date() }
+        });
+      }
+
+      const response = await this.repository.getAll(req.query);
+      return res.status(response.statusCode).json(response);
+    }
+    catch (e) {
+      next(e);
+    }
+  }
+
+  async delete(req, res, next) {
+    const { id } = req.params;
+    try {
+      
+      if(req.user.role != "admin" && id != req.user.id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const response = await this.repository.delete(id);
+      return res.status(response.statusCode).json(response);
+    }
+    catch (e) {
+      next(e);
+    }
+  }
 }
 
 export default UserController;
