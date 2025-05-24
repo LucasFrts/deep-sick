@@ -1,6 +1,7 @@
 import autoBind from "auto-bind";
 import fs from "fs";
 import path from "path";
+import emojiRegex from 'emoji-regex';
 import { fileURLToPath } from 'url';
 import { NotProcessableAudioException } from "../exceptions/not-processable-audio-exception.js";
 
@@ -13,10 +14,23 @@ export default class TextToAudioService {
     autoBind(this);
   }
 
+  sanitize(text) {
+    if (!text) return text;
+    let cleaned = text.replace(/\*+/g, '');
+    cleaned = cleaned.replace(/#/g, '');
+    
+    const regex = emojiRegex();
+    cleaned = cleaned.replace(regex, '');
+    
+    cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+    return cleaned;
+  }
+
   async synthesize(text, language) {
     try {
+      const cleanedText = this.sanitize(text);
       const [response] = await this.sdk.synthesizeSpeech({
-        input: { text },
+        input: { text:cleanedText },
         voice: { languageCode: language,name: `${language}-Wavenet-A` ,ssmlGender: 'FEMALE' },
         audioConfig: { audioEncoding: 'MP3' },
       });

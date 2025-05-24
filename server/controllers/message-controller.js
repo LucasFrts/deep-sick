@@ -186,4 +186,35 @@ export default class MessageController {
       next(err);
     }
   }
+
+  async audioToAudio(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const language = req.user.language;
+      const filePath = req.file.path;
+
+      const audioBytes = await this.audioToTextService.convert(filePath);
+      const transcribed = await this.audioToTextService.transcribe(
+        audioBytes,
+        language
+      );
+
+      const { repply } = await this.messageService.processMessage(
+        userId,
+        transcribed
+      );
+
+      const { filePath:filePathResponse, fileName } = await this.textToAudioService.process(
+        repply,
+        language,
+        userId
+      );
+
+      return res.download(filePathResponse, fileName, (err) => {
+        if (err) return next(err);
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

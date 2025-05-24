@@ -38,6 +38,6 @@ router.post('/sick', ensureAuth, messageController.sendSick);
 
 router.post('/from-audio', ensureAuth, upload.single('audio'), messageController.fromAudio);
 router.post('/to-audio', ensureAuth, messageController.toAudio);
-// router.post('/from-audio/to-audio', ensureAuth, multer.single('audio'), messageController.sendAudioToAudio);
+router.post('/from-audio/to-audio', ensureAuth, upload.single('audio'), messageController.audioToAudio);
 
 export default router;
