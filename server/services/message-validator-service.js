@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { ForbiddenWordError } from '../exceptions/forbidden-word-error.js';
+import { RateLimitExceededError } from '../exceptions/rate-limit-exceed-error.js';
 
 export default class MessageValidatorService {
   constructor({ messageRepository, forbiddenWords = [], rateLimitCount = 10, rateLimitWindow = 10 }) {
