@@ -2,11 +2,13 @@
 import autoBind from "auto-bind";
 import { RateLimitExceededError } from "../exceptions/rate-limit-exceed-error.js";
 import { ForbiddenWordError } from "../exceptions/forbidden-word-error.js";
+import fs from 'fs';
 
 export default class MessageController {
 
-  constructor(messageService, messageValidatorService) {
+  constructor(messageService, audioToTextService, messageValidatorService) {
     this.messageService = messageService;
+    this.audioToTextService = audioToTextService;
     this.messageValidatorService = messageValidatorService;
     autoBind(this);
   }
@@ -108,4 +110,29 @@ export default class MessageController {
       next(err);
     }
   }
+
+  async fromAudio(req, res, next){
+    try {
+      const userId = req.user.id;
+      const language = req.user.language;
+      const filePath = req.file.path;
+
+      const audioBytes = await this.audioToTextService.convert(filePath);
+      const transcribed = await this.audioToTextService.transcribe(audioBytes, language);
+
+      const { repply, messages } = await this.messageService.processMessage(
+        userId,
+        transcribed
+      );
+
+      return res.status(200).json({
+        statusCode: 200,
+        data:  { assistant: repply, history: messages },
+        metadata: { timestamp: new Date() },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
 }
