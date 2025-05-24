@@ -14,7 +14,7 @@ const deepseek = new OpenAI({
 
 const deepSick = async (prompt) => {
     const response = await deepseek.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "deepseek-chat",
         messages: [
             {
                 role: "system",

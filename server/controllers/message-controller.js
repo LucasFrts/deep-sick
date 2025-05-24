@@ -75,4 +75,37 @@ export default class MessageController {
       next(err);
     }
   }
+
+  async sendSick(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const { message } = req.body;
+      
+      if (!message) {
+        return res
+          .status(400)
+          .json({ statusCode: 400, error: "message é obrigatório" });
+      }
+      
+      await this.messageValidatorService.validate(userId, message);
+
+      const { repply, messages } = await this.messageService.processMessageSick(
+        userId,
+        message
+      );
+      return res.status(200).json({
+        statusCode: 200,
+        data: { assistant: repply, history: messages },
+        metadata: { timestamp: new Date() },
+      });
+    } catch (err) {
+      if (err instanceof ForbiddenWordError) {
+        return res.status(err.statusCode).json({ error: err.message });
+      }
+      if (err instanceof RateLimitExceededError) {
+        return res.status(err.statusCode).json({ error: err.message });
+      }
+      next(err);
+    }
+  }
 }
