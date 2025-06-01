@@ -3,10 +3,13 @@
 import Controller from './controller.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import autoBind from 'auto-bind';
 
 class UserController extends Controller {
-  constructor(repository) {
+  constructor(repository, userService) {
     super(repository);
+    this.userService = userService;
+    autoBind(this);
   }
 
   /**
@@ -53,7 +56,7 @@ class UserController extends Controller {
     try {
 
       if(req.user.role != "admin" && id != req.user.id) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(403).json({ message: 'Forbidden' });
       }
 
       if(req.body.role) {
@@ -65,7 +68,7 @@ class UserController extends Controller {
       req.body.password = hashedPassword;
      }
       const response = await this.repository.update(id, req.body);
-      return res.status(response.statusCode).json(response);
+      return res.status(500).json(response);
     }
     catch (e) {
       next(e);
@@ -87,6 +90,7 @@ class UserController extends Controller {
       return res.status(response.statusCode).json(response);
     }
     catch (e) {
+      console.log(e);
       next(e);
     }
   }
